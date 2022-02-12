@@ -71,6 +71,21 @@ elif [[ x"${release}" == x"debian" ]]; then
     fi
 fi
 
+checkSys() {
+    [ $(id -u) != "0" ] && { colorEcho ${RED} "Error: You must be root to run this script"; exit 1; }
+
+    if [[ `command -v apt-get` ]];then
+        PACKAGE_MANAGER='apt-get'
+    elif [[ `command -v dnf` ]];then
+        PACKAGE_MANAGER='dnf'
+    elif [[ `command -v yum` ]];then
+        PACKAGE_MANAGER='yum'
+    else
+        colorEcho $RED "Not support OS!"
+        exit 1
+    fi
+}
+
 confirm() {
     if [[ $# > 1 ]]; then
         echo && read -p "$1 [default $2]: " temp
@@ -149,6 +164,9 @@ installDependent(){
 }
 
 install_v2_ui() {
+    checkSys
+    installDependent
+    
     systemctl stop v2-ui
     cd /usr/local/
     if [[ -e /usr/local/v2-ui/ ]]; then
@@ -181,7 +199,6 @@ install_v2_ui() {
     tar zxvf v2-ui-linux-${arch}.tar.gz
     rm v2-ui-linux-${arch}.tar.gz -f
     cd v2-ui
-    installDependent
     chmod +x bin/xray-v2-ui-linux-${arch}
     cp -f v2-ui.service /etc/systemd/system/
     systemctl daemon-reload
