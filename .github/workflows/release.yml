@@ -26,7 +26,7 @@ jobs:
           draft: false
           prerelease: false
           release_name: Release ${{ github.ref }}
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: upload linux artifact
