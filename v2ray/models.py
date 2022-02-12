@@ -60,5 +60,14 @@ class Inbound(db.Model):
             'tag': self.tag,
         }
 
+    def clients_to_v2_json(self):
+        _id = self['id']
+        alterId = self['alterId']
+        return {
+            'id': _id,
+            'alterId': alterId,
+            'email': f'{_id}@{alterId}',
+        }
+
     def to_v2_str(self):
         return json.dumps(self.to_v2_json(), indent=2, separators=(',', ': '), sort_keys=True, ensure_ascii=False)

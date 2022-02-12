@@ -25,6 +25,9 @@ def get_xray_file_name():
 
 V2_CONF_KEYS = ['log', 'api', 'dns', 'routing', 'policy', 'inbounds', 'outbounds', 'transport',
                 'stats', 'reverse']
+
+V2_CONF_CLIENT_KEYS = ['alterId', 'id']
+
 __is_windows: bool = sys_util.is_windows()
 __v2ray_cmd: str = os.path.join(config.BASE_DIR, 'bin', get_xray_file_name())
 __v2ray_conf_path: str = os.path.join(config.BASE_DIR, 'bin', 'config.json')
@@ -92,7 +95,7 @@ def restart_v2ray():
         start_v2ray()
 
 
-def gen_v2_config_from_db():
+def gen_v2_config_from_db_orig():
     inbounds = Inbound.query.filter_by(enable=True).all()
     inbounds = [inbound.to_v2_json() for inbound in inbounds]
     v2_config = json.loads(config.get_v2_template_config())
@@ -102,6 +105,23 @@ def gen_v2_config_from_db():
             v2_config[conf_key] = {}
     return v2_config
 
+def gen_v2_config_from_db():
+    inbounds = Inbound.query.filter_by(enable=True).all()
+    inbounds = [inbound.to_v2_json() for inbound in inbounds]
+    v2_config = json.loads(config.get_v2_template_config())
+    clients = []
+    for inbound in inbounds:
+        clientss = inbound['settings']['clients']
+        for client in clientss:
+            clients.append(Inbound.clients_to_v2_json(client))
+
+    v2_config['inbounds'][0]['settings']['clients'] += clients
+    # v2_config['inbounds'] += inbounds
+    
+    for conf_key in V2_CONF_KEYS:
+        if conf_key not in v2_config:
+            v2_config[conf_key] = {}
+    return v2_config
 
 def read_v2_config() -> Optional[dict]:
     try:
@@ -157,13 +177,6 @@ def write_v2_config(v2_config: dict):
         logging.error('An error occurred while writing the xray configuration file: ' + str(e))
 
 
-def __get_api_address_port():
-    template_config = json.loads(config.get_v2_template_config())
-    inbounds = template_config['inbounds']
-    api_inbound = list_util.get(inbounds, 'tag', 'api')
-    return api_inbound['listen'], api_inbound['port']
-
-
 def __get_stat_code():
     if __v2ray_process is None or __v2ray_process.poll() is not None:
         if __v2ray_error_msg != '':
@@ -208,15 +221,6 @@ def restart(now=False):
     else:
         Timer(3, f).start()
 
-
-try:
-    __api_address, __api_port = __get_api_address_port()
-    if not __api_address or __api_address == '0.0.0.0':
-        __api_address = '127.0.0.1'
-except Exception as e:
-    logging.error('Fail to open xray api, please reset all panel settings.')
-    logging.error(str(e))
-    sys.exit(-1)
 __traffic_pattern = re.compile('stat:\s*<\s*name:\s*"inbound>>>'
                                '(?P<tag>[^>]+)>>>traffic>>>(?P<type>uplink|downlink)"(\s*value:\s*(?P<value>\d+))?')
 

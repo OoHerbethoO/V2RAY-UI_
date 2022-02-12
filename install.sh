@@ -168,6 +168,9 @@ install_v2_ui() {
     installDependent
 
     systemctl stop v2-ui
+    mkdir -p /var/log/v2ray/
+    mkdir -p /etc/v2-ui/
+    
     cd /usr/local/
     if [[ -e /usr/local/v2-ui/ ]]; then
         rm /usr/local/v2-ui/ -rf
