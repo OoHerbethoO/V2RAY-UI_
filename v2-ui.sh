@@ -61,7 +61,7 @@ fi
 
 confirm() {
     if [[ $# > 1 ]]; then
-        echo && read -p "$1 [default$2]: " temp
+        echo && read -p "$1 [default $2]: " temp
         if [[ x"${temp}" == x"" ]]; then
             temp=$2
         fi
@@ -103,7 +103,7 @@ install() {
 update() {
     confirm "This function will force the latest version to be reinstalled, and the data will not be lost. Do you want to continue?" "n"
     if [[ $? != 0 ]]; then
-        echo -e "${red}已取消${plain}"
+        echo -e "${red}Cancelled${plain}"
         if [[ $# == 0 ]]; then
             before_show_menu
         fi
