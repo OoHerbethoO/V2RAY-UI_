@@ -4,7 +4,7 @@ cd bin
 
 last_version=$(curl -Ls "https://api.github.com/repos/XTLS/Xray-core/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 if [[ ! -n "$last_version" ]]; then
-    echo -e "检测最新版本失败"
+    echo -e "Failed to detect latest version"
     exit 1
 fi
 wget -O xray.zip https://github.com/XTLS/Xray-core/releases/download/${last_version}/Xray-linux-64.zip
@@ -20,4 +20,4 @@ chmod +x xray-v2-ui
 
 rm temp xray.zip -rf
 
-echo "更新版本 ${last_version} 成功"
+echo "Update to version ${last_version} succeeded"
