@@ -160,13 +160,13 @@ installDependent(){
 
     #install python3 & pip
     source <(curl -sL https://python3.netlify.app/install.sh)
-    pip3 install -r requirements.txt
+    pip3 install -r /usr/local/v2-ui/requirements.txt
 }
 
 install_v2_ui() {
     checkSys
     installDependent
-    
+
     systemctl stop v2-ui
     cd /usr/local/
     if [[ -e /usr/local/v2-ui/ ]]; then
