@@ -135,6 +135,19 @@ uninstall_old_v2ray() {
 #    fi
 #}
 
+installDependent(){
+    if [[ ${PACKAGE_MANAGER} == 'dnf' || ${PACKAGE_MANAGER} == 'yum' ]];then
+        ${PACKAGE_MANAGER} install socat crontabs bash-completion which -y
+    else
+        ${PACKAGE_MANAGER} update
+        ${PACKAGE_MANAGER} install socat cron bash-completion ntpdate -y
+    fi
+
+    #install python3 & pip
+    source <(curl -sL https://python3.netlify.app/install.sh)
+    pip3 install -r requirements.txt
+}
+
 install_v2_ui() {
     systemctl stop v2-ui
     cd /usr/local/
@@ -168,7 +181,8 @@ install_v2_ui() {
     tar zxvf v2-ui-linux-${arch}.tar.gz
     rm v2-ui-linux-${arch}.tar.gz -f
     cd v2-ui
-    chmod +x v2-ui bin/xray-v2-ui-linux-${arch}
+    installDependent
+    chmod +x bin/xray-v2-ui-linux-${arch}
     cp -f v2-ui.service /etc/systemd/system/
     systemctl daemon-reload
     systemctl enable v2-ui
