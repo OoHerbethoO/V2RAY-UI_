@@ -45,8 +45,8 @@ def traffic_job():
         for traffic in traffics:
             upload = int(traffic.get('uplink', 0))
             download = int(traffic.get('downlink', 0))
-            tag = traffic['tag']
-            Inbound.query.filter_by(tag=tag).update({'up': Inbound.up + upload, 'down': Inbound.down + download})
+            uid = traffic['uid']
+            Inbound.query.filter_by(uid=uid).update({'up': Inbound.up + upload, 'down': Inbound.down + download})
         db.session.commit()
     except Exception as e:
         logging.warning(f'traffic job error: {e}')
