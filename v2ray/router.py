@@ -70,8 +70,8 @@ def inbounds():
 @v2_config_change
 def add_inbound():
     port = int(request.form['port'])
-    if Inbound.query.filter_by(port=port).count() > 0:
-        return jsonify(Msg(False, gettext('port exists')))
+    # if Inbound.query.filter_by(port=port).count() > 0:
+    #     return jsonify(Msg(False, gettext('port exists')))
     listen = request.form['listen']
     protocol = request.form['protocol']
     settings = request.form['settings']

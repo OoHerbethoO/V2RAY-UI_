@@ -111,11 +111,10 @@ def gen_v2_config_from_db():
     v2_config = json.loads(config.get_v2_template_config())
     clients = []
     for inbound in inbounds:
-        clientss = inbound['settings']['clients']
-        for client in clientss:
+        for client in inbound['settings']['clients']:
             clients.append(Inbound.clients_to_v2_json(client))
 
-    v2_config['inbounds'][0]['settings']['clients'] += clients
+    v2_config['inbounds'][1]['settings']['clients'] += clients
     # v2_config['inbounds'] += inbounds
     
     for conf_key in V2_CONF_KEYS:
@@ -176,6 +175,11 @@ def write_v2_config(v2_config: dict):
     except Exception as e:
         logging.error('An error occurred while writing the xray configuration file: ' + str(e))
 
+def __get_api_address_port():
+    template_config = json.loads(config.get_v2_template_config())
+    inbounds = template_config['inbounds']
+    api_inbound = list_util.get(inbounds, 'tag', 'api')
+    return '0.0.0.0', api_inbound['port']
 
 def __get_stat_code():
     if __v2ray_process is None or __v2ray_process.poll() is not None:
@@ -184,6 +188,16 @@ def __get_stat_code():
         return 1
     return 0
 
+try:
+    __api_address, __api_port = __get_api_address_port()
+    if not __api_address or __api_address == '0.0.0.0':
+        __api_address = '127.0.0.1'
+except Exception as e:
+    logging.error('Fail to open xray api, please reset all panel settings.')
+    logging.error(str(e))
+    sys.exit(-1)
+__traffic_pattern = re.compile('stat:\s*<\s*name:\s*"user>>>'
+                               '(?P<tag>[^>]+)>>>traffic>>>(?P<type>uplink|downlink)"(\s*value:\s*(?P<value>\d+))?')
 
 def get_v2ray_version():
     global __v2ray_version
@@ -221,7 +235,7 @@ def restart(now=False):
     else:
         Timer(3, f).start()
 
-__traffic_pattern = re.compile('stat:\s*<\s*name:\s*"inbound>>>'
+__traffic_pattern = re.compile('stat:\s*<\s*name:\s*"user>>>'
                                '(?P<tag>[^>]+)>>>traffic>>>(?P<type>uplink|downlink)"(\s*value:\s*(?P<value>\d+))?')
 
 
@@ -242,7 +256,8 @@ def get_inbounds_traffic(reset=True):
         return None
     inbounds = []
     try:
-        name_pattern = re.compile("inbound>>>(?P<tag>[^>]+)>>>traffic>>>(?P<type>uplink|downlink)")
+        name_pattern = re.compile("user>>>(?P<uid>[^>]+)>>>traffic>>>(?P<type>uplink|downlink)")
+        inbound_pattern = re.compile("inbound>>>(?P<uid>[^>]+)>>>traffic>>>(?P<type>uplink|downlink)")
         stat = json.loads(result)
         stats = stat["stat"]
         for s in stats:
@@ -250,21 +265,25 @@ def get_inbounds_traffic(reset=True):
             value = 0
             if "value" in s:
                 value = s["value"]
+                
             match = name_pattern.fullmatch(name)
-            tag = match.group("tag")
-            tag = codecs.getdecoder('unicode_escape')(tag)[0]
-            tag = tag.encode('ISO8859-1').decode('utf-8')
-            if tag == 'api':
+            in_match = inbound_pattern.fullmatch(name)
+            if in_match:
                 continue
+
+            uid = match.group("uid")
+            uid = codecs.getdecoder('unicode_escape')(uid)[0]
+            uid = uid.encode('ISO8859-1').decode('utf-8')
             _type = match.group('type')
-            inbound = list_util.get(inbounds, 'tag', tag)
+            inbound = list_util.get(inbounds, 'uid', uid)
             if inbound:
                 inbound[_type] = value
             else:
                 inbounds.append({
-                    'tag': tag,
+                    'uid': uid,
                     _type: value
                 })
+            
     except Exception as e:
         logging.error(e)
     # for match in __traffic_pattern.finditer(result):

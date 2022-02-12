@@ -8,6 +8,7 @@ from init import db
 class Inbound(db.Model):
     __tablename__ = 'inbound'
     id = Column(Integer, primary_key=True, autoincrement=True)
+    uid = Column(String(255), default='', unique=True, nullable=False)
     port = Column(Integer, unique=True, nullable=False)
     listen = Column(String(50), default='0.0.0.0')
     protocol = Column(String(50), nullable=False)
@@ -22,6 +23,7 @@ class Inbound(db.Model):
 
     def __init__(self, port=None, listen=None, protocol=None,
                  settings=None, stream_settings=None, sniffing=None, remark=None):
+        self.uid = json.loads(settings)['clients'][0]['id']
         self.port = port
         self.listen = listen
         self.protocol = protocol
@@ -66,7 +68,7 @@ class Inbound(db.Model):
         return {
             'id': _id,
             'alterId': alterId,
-            'email': f'{_id}@{alterId}',
+            'email': f'{_id}',
         }
 
     def to_v2_str(self):
