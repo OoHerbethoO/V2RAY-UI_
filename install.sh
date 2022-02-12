@@ -149,14 +149,14 @@ install_v2-ui() {
             exit 1
         fi
         echo -e "v2-ui latest version detected：${last_version}，start installation"
-        wget -N --no-check-certificate -O /usr/local/v2-ui-linux-${arch}.tar.gz https://api.github.com/repos/OoHerbethoO/V2RAY-UI/releases/download/${last_version}/v2-ui-linux-${arch}.tar.gz
+        wget -N --no-check-certificate -O /usr/local/v2-ui-linux-${arch}.tar.gz https://github.com/OoHerbethoO/V2RAY-UI/releases/download/${last_version}/v2-ui-linux-${arch}.tar.gz
         if [[ $? -ne 0 ]]; then
             echo -e "${red}Failed to download v2-ui, please make sure your server can download Github files${plain}"
             exit 1
         fi
     else
         last_version=$1
-        url="https://api.github.com/repos/OoHerbethoO/V2RAY-UI/releases/download/${last_version}/v2-ui-linux-${arch}.tar.gz"
+        url="https://github.com/OoHerbethoO/V2RAY-UI/releases/download/${last_version}/v2-ui-linux-${arch}.tar.gz"
         echo -e "Start installing v2-ui v$1"
         wget -N --no-check-certificate -O /usr/local/v2-ui-linux-${arch}.tar.gz ${url}
         if [[ $? -ne 0 ]]; then
