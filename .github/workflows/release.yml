@@ -15,10 +15,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: Create build folder # This would actually build your project, using zip for an example artifact
-        run: mkdir -p ../build
+        run: mkdir -p ../build/v2-ui
+      - name: Copy file to build folder # This would actually build your project, using zip for an example artifact
+        run: cp -rv . ../build/v2-ui
       - name: Build project # This would actually build your project, using zip for an example artifact
         run: |
-          tar -czvf ../build/v2-ui-linux-arm64.tar.gz ./
+          tar -czvf ./v2-ui-linux-arm64.tar.gz ../build/
       - name: release
         uses: actions/create-release@v1
         id: create_release
@@ -35,6 +37,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ../build/v2-ui-linux-arm64.tar.gz
+          asset_path: ./v2-ui-linux-arm64.tar.gz
           asset_name: v2-ui-linux-arm64.tar.gz
           asset_content_type: application/gzip

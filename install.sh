@@ -135,7 +135,7 @@ uninstall_old_v2ray() {
 #    fi
 #}
 
-install_v2-ui() {
+install_v2_ui() {
     systemctl stop v2-ui
     cd /usr/local/
     if [[ -e /usr/local/v2-ui/ ]]; then
@@ -203,4 +203,4 @@ echo -e "${green}Start installation${plain}"
 install_base
 uninstall_old_v2ray
 #close_firewall
-install_v2-ui $1
+install_v2_ui $1
