@@ -14,7 +14,7 @@ yellow='\033[0;33m'
 plain='\033[0m'
 
 # check root
-[[ $EUID -ne 0 ]] && echo -e "${red}错误: ${plain} 必须使用root用户运行此脚本！\n" && exit 1
+[[ $EUID -ne 0 ]] && echo -e "${red}Error:${plain} This script must be run as root user！\n" && exit 1
 
 # check os
 if [[ -f /etc/redhat-release ]]; then
@@ -138,11 +138,11 @@ uninstall() {
     rm /usr/local/v2-ui/ -rf
 
     echo ""
-    echo -e "The uninstallation is successful, if you want to delete this script, run ${green}rm /usr/bin/v2-ui -f${plain} after exiting the script to delete"
+    echo -e "The uninstallation is successful, if you want to delete this script, run ${green}rm -rf /usr/bin/v2-ui${plain} after exiting the script to delete"
     echo ""
-    echo -e "Telegram 群组: ${green}https://t.me/sprov_blog${plain}"
+    # echo -e "Telegram 群组: ${green}https://t.me/sprov_blog${plain}"
     echo -e "Github issues: ${green}https://github.com/OoHerbethoO/V2RAY-UI/issues${plain}"
-    echo -e "博客: ${green}https://blog.sprov.xyz/v2-ui${plain}"
+    echo -e "Github Repo: ${green}https://github.com/OoHerbethoO/V2RAY-UI${plain}"
 
     if [[ $# == 0 ]]; then
         before_show_menu
@@ -234,7 +234,7 @@ restart() {
     sleep 2
     check_status
     if [[ $? == 0 ]]; then
-        echo -e "${green}v2-ui 与 xray 重启成功${plain}"
+        echo -e "${green}Panel v2-ui and xray restarted successfully${plain}"
     else
         echo -e "${red}The panel failed to restart, maybe because the startup time exceeded two seconds, please check the log information later${plain}"
     fi
@@ -423,7 +423,7 @@ show_usage() {
 show_menu() {
     echo -e "
   ${green}v2-ui panel management script${plain}
---- https://blog.sprov.xyz/v2-ui ---
+--- https://github.com/OoHerbethoO/V2RAY-UI ---
   ${green}0.${plain} exit script
 ————————————————
   ${green}1.${plain} Install v2-ui

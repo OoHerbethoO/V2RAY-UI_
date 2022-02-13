@@ -114,7 +114,7 @@ install_base() {
 
 uninstall_old_v2ray() {
     if [[ -f /usr/bin/v2ray/v2ray ]]; then
-        confirm "Detected an old version of v2ray, uninstall it or not, it will be deleted /usr/bin/v2ray/ 与 /etc/systemd/system/v2ray.service" "Y"
+        confirm "Detected an old version of v2ray, uninstall it or not, it will be deleted /usr/bin/v2ray/ and /etc/systemd/system/v2ray.service" "Y"
         if [[ $? != 0 ]]; then
             echo "Can't install without uninstalling v2-ui"
             exit 1
@@ -182,7 +182,7 @@ timeSync() {
 }
 
 closeSELinux() {
-    #禁用SELinux
+    #disable SELinux
     if [ -s /etc/selinux/config ] && grep 'SELINUX=enforcing' /etc/selinux/config; then
         sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
         setenforce 0
@@ -190,7 +190,7 @@ closeSELinux() {
 }
 
 profileInit() {
-    #解决Python3中文显示问题
+    #Solve the problem of Chinese display in Python3
     [[ -z $(grep PYTHONIOENCODING=utf-8 ~/$ENV_FILE) ]] && echo "export PYTHONIOENCODING=utf-8" >> ~/$ENV_FILE && source ~/$ENV_FILE
 
     echo ""
