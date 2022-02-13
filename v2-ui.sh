@@ -157,7 +157,7 @@ reset_user() {
         fi
         return 0
     fi
-    /usr/local/v2-ui/v2-ui resetuser
+    /usr/bin/python3 /usr/local/v2-ui/v2-ui.py resetuser
     echo -e "Username and password have been reset to ${green}admin${plain}, please restart the panel now"
     confirm_restart
 }
@@ -170,7 +170,7 @@ reset_config() {
         fi
         return 0
     fi
-    /usr/local/v2-ui/v2-ui resetconfig
+    /usr/bin/python3 /usr/local/v2-ui/v2-ui.py resetconfig
     echo -e "All panels have been reset to default, now reboot the panels and use the default ${green}65432${plain} port to access the panels"
     confirm_restart
 }
@@ -181,7 +181,7 @@ set_port() {
         echo -e "${yellow}Cancelled${plain}"
         before_show_menu
     else
-        /usr/local/v2-ui/v2-ui setport ${port}
+        /usr/bin/python3 /usr/local/v2-ui/v2-ui.py setport ${port}
         echo -e "You are done setting the port, now restart the panel and use the newly set port ${green}${port}${plain} to access the panel"
         confirm_restart
     fi
