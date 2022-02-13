@@ -21,6 +21,13 @@ jobs:
       - name: Build project # This would actually build your project, using zip for an example artifact
         run: |
           tar -czvf ./v2-ui-linux-arm64.tar.gz ../v2-ui
+      - name: Delete tag and release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true # default: false
+          tag_name: ${{ github.ref }} # tag name to delete
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: release
         uses: actions/create-release@v1
         id: create_release
@@ -28,7 +35,7 @@ jobs:
           draft: false
           prerelease: false
           release_name: Release ${{ github.ref }}
-          tag_name: v${{ github.ref }}
+          tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: upload linux artifact
