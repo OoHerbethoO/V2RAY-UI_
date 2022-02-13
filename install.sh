@@ -7,8 +7,10 @@ plain='\033[0m'
 
 cur_dir=$(pwd)
 
+[[ -z $(echo $SHELL|grep zsh) ]] && ENV_FILE=".bashrc" || ENV_FILE=".zshrc"
+
 # check root
-[[ $EUID -ne 0 ]] && echo -e "${red}错误：${plain} This script must be run as root user！\n" && exit 1
+[[ $EUID -ne 0 ]] && echo -e "${red}Error:${plain} This script must be run as root user！\n" && exit 1
 
 # check os
 if [[ -f /etc/redhat-release ]]; then
@@ -163,6 +165,37 @@ installDependent(){
     pip3 install -r /usr/local/v2-ui/requirements.txt
 }
 
+timeSync() {
+    if [[ ${INSTALL_WAY} == 0 ]];then
+        echo -e "${Info} Time Synchronizing.. ${Font}"
+        if [[ `command -v ntpdate` ]];then
+            ntpdate pool.ntp.org
+        elif [[ `command -v chronyc` ]];then
+            chronyc -a makestep
+        fi
+
+        if [[ $? -eq 0 ]];then 
+            echo -e "${OK} Time Sync Success ${Font}"
+            echo -e "${OK} now: `date -R`${Font}"
+        fi
+    fi
+}
+
+closeSELinux() {
+    #禁用SELinux
+    if [ -s /etc/selinux/config ] && grep 'SELINUX=enforcing' /etc/selinux/config; then
+        sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+        setenforce 0
+    fi
+}
+
+profileInit() {
+    #解决Python3中文显示问题
+    [[ -z $(grep PYTHONIOENCODING=utf-8 ~/$ENV_FILE) ]] && echo "export PYTHONIOENCODING=utf-8" >> ~/$ENV_FILE && source ~/$ENV_FILE
+
+    echo ""
+}
+
 install_v2_ui() {
     checkSys
 
@@ -202,6 +235,10 @@ install_v2_ui() {
     rm v2-ui-linux-${arch}.tar.gz -f
     cd v2-ui
     installDependent
+    closeSELinux
+    timeSync
+    profileInit
+
     chmod +x bin/xray-v2-ui-linux-${arch}
     cp -f v2-ui.service /etc/systemd/system/
     systemctl daemon-reload
