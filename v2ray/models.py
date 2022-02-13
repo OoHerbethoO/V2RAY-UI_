@@ -64,12 +64,18 @@ class Inbound(db.Model):
 
     def clients_to_v2_json(self):
         _id = self['id']
-        alterId = self['alterId']
-        return {
-            'id': _id,
-            'alterId': alterId,
-            'email': f'{_id}',
-        }
+        if 'alterId' in self:
+            alterId = self['alterId']
+            return {
+                'id': _id,
+                'alterId': alterId,
+                'email': f'{_id}',
+            }
+        else:
+            return {
+                'id': _id,
+                'email': f'{_id}',
+            }
 
     def to_v2_str(self):
         return json.dumps(self.to_v2_json(), indent=2, separators=(',', ': '), sort_keys=True, ensure_ascii=False)

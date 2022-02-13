@@ -39,6 +39,7 @@ __v2ray_process_lock: Lock = Lock()
 
 class Protocols(Enum):
     VMESS = 'vmess'
+    VLESS = 'vless'
     SHADOWSOCKS = 'shadowsocks'
     DOKODEMO = 'dokodemo-door'
     SOCKS = 'socks'
