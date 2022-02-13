@@ -40,7 +40,7 @@ else
   echo -e "${red}Failed to detect schema, use default schema: ${arch}${plain}"
 fi
 
-echo "架构: ${arch}"
+echo "Architecture: ${arch}"
 
 if [ $(getconf WORD_BIT) != '32' ] && [ $(getconf LONG_BIT) != '64' ] ; then
     echo "This software does not support 32-bit system (x86), please use 64-bit system (x86_64), if the detection is wrong, please contact the author"
@@ -165,7 +165,6 @@ installDependent(){
 
 install_v2_ui() {
     checkSys
-    installDependent
 
     systemctl stop v2-ui
     mkdir -p /var/log/v2ray/
@@ -202,6 +201,7 @@ install_v2_ui() {
     tar zxvf v2-ui-linux-${arch}.tar.gz
     rm v2-ui-linux-${arch}.tar.gz -f
     cd v2-ui
+    installDependent
     chmod +x bin/xray-v2-ui-linux-${arch}
     cp -f v2-ui.service /etc/systemd/system/
     systemctl daemon-reload

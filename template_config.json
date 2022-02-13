@@ -10,15 +10,6 @@
   },
   "inbounds": [
     {
-      "listen": "127.0.0.1",
-      "port": 62789,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1"
-      },
-      "tag": "api"
-    },
-    {
       "port": 443,
       "protocol": "vmess",
       "settings": {
@@ -30,8 +21,8 @@
         "tlsSettings": {
           "certificates": [
             {
-              "certificateFile": "",
-              "keyFile": ""
+              "certificateFile": "/etc/letsencrypt/live/oracle.virtualnet.ml/fullchain.pem",
+              "keyFile": "/etc/letsencrypt/live/oracle.virtualnet.ml/privkey.pem"
             }
           ]
         },
@@ -41,13 +32,13 @@
         "wsSettings": {
           "path": "/ws/",
           "headers": {
-            "Host": "your.domain.tl"
+            "Host": "oracle.virtualnet.ml"
           }
         },
         "quicSettings": {}
       },
-      "domain": "your.domain.tl",
-      "tag": "client"
+      "domain": "oracle.virtualnet.ml",
+      "tag": "api"
     }
   ],
   "outbounds": [
@@ -62,12 +53,6 @@
     }
   ],
   "policy": {
-    "levels": {
-      "0": {
-        "statsUserUplink": true,
-        "statsUserDownlink": true
-      }
-    },
     "system": {
       "statsInboundDownlink": true,
       "statsInboundUplink": true
@@ -76,11 +61,7 @@
   "routing": {
     "rules": [
       {
-        "inboundTag": ["api"],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
+        "type": "field",
         "ip": [
           "0.0.0.0/8",
           "10.0.0.0/8",
@@ -95,16 +76,9 @@
           "203.0.113.0/24",
           "::1/128",
           "fc00::/7",
-          "fe80::/10",
-          "geoip:private"
+          "fe80::/10"
         ],
-        "outboundTag": "blocked",
-        "type": "field"
-      },
-      {
-        "outboundTag": "blocked",
-        "protocol": ["bittorrent"],
-        "type": "field"
+        "outboundTag": "blocked"
       }
     ]
   },
