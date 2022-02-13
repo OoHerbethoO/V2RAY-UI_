@@ -21,6 +21,8 @@ jobs:
       - name: Build project # This would actually build your project, using zip for an example artifact
         run: |
           tar -czvf ./v2-ui-linux-arm64.tar.gz ../v2-ui
+      - name: Copy file builded to amd64 # This would actually build your project, using zip for an example artifact
+        run: cp ./v2-ui-linux-arm64.tar.gz ./v2-ui-linux-amd64.tar.gz
       - name: Delete tag and release
         uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
@@ -38,7 +40,7 @@ jobs:
           tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: upload linux artifact
+      - name: upload linux arm64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -46,4 +48,13 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./v2-ui-linux-arm64.tar.gz
           asset_name: v2-ui-linux-arm64.tar.gz
+          asset_content_type: application/gzip
+      - name: upload linux amd64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./v2-ui-linux-amd64.tar.gz
+          asset_name: v2-ui-linux-amd64.tar.gz
           asset_content_type: application/gzip
